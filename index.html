@@ -658,7 +658,7 @@ h2 em{color:var(--accent);font-style:normal}
 
     <section class="section about-section" id="about" aria-labelledby="about-title"><div class="container"><div class="about-card reveal"><div class="about-copy"><div class="section-kicker"><span>04</span> / HOW I WORK</div><h2 id="about-title">Curiosity in.<br/><em>Clarity out.</em></h2><p>I care about the parts you don't always see: resilient data flows, clear interfaces, maintainable boundaries, secure integrations, and operations that won't surprise the team at 2 a.m.</p><p>I'm at my best where backend engineering meets product thinking — collaborating across disciplines to deliver software that's useful, sustainable, and ready to grow.</p><a href="#contact" class="inline-link">Start a conversation <span>↗</span></a></div><div class="principle-grid"><div class="principle"><span class="principle-number">01</span><span class="principle-symbol">◇</span><h3>Think in systems</h3><p>Understand the full flow, not just the individual component.</p></div><div class="principle"><span class="principle-number">02</span><span class="principle-symbol">◎</span><h3>Design for change</h3><p>Choose simple boundaries and code that's easy to evolve.</p></div><div class="principle"><span class="principle-number">03</span><span class="principle-symbol">✧</span><h3>Own the outcome</h3><p>From first requirement to reliable production delivery.</p></div><div class="principle"><span class="principle-number">04</span><span class="principle-symbol">↗</span><h3>Keep learning</h3><p>Challenge assumptions, explore tools, improve continuously.</p></div></div></div></div></section>
 
-    <section class="section contact-section" id="contact" aria-labelledby="contact-title"><div class="container"><div class="contact-panel reveal"><div class="contact-sunburst" aria-hidden="true">✳</div><div class="section-kicker"><span>05</span> / WHAT'S NEXT?</div><div class="contact-heading-wrap"><h2 id="contact-title">Let's make something<br/><em>remarkable.</em></h2><p>I'm interested in ambitious engineering teams, challenging product problems, and opportunities to relocate to the Netherlands or Belgium.</p></div><div class="contact-actions"><a class="button button-dark" href="mailto:" id="email-link" hidden>Send me an email <span class="button-arrow">↗</span></a><a class="button button-dark" id="linkedin-link" href="#contact" target="_blank" rel="noopener noreferrer" hidden>Connect on LinkedIn <span class="button-arrow">↗</span></a><button class="button button-dark" id="copy-link" type="button">Copy portfolio link <span class="button-arrow">⧉</span></button></div><div class="contact-links"><a id="github-link" href="#contact" target="_blank" rel="noopener noreferrer" hidden><span class="social-icon">⌘</span> GitHub ↗</a><a id="secondary-linkedin-link" href="#contact" target="_blank" rel="noopener noreferrer" hidden>in LinkedIn ↗</a><a id="resume-link" href="#contact" download hidden>↓ Download résumé</a><span class="contact-location">↗ Based in Pakistan · Open to relocation</span></div></div></div></section>
+    <section class="section contact-section" id="contact" aria-labelledby="contact-title"><div class="container"><div class="contact-panel reveal"><div class="contact-sunburst" aria-hidden="true">✳</div><div class="section-kicker"><span>05</span> / WHAT'S NEXT?</div><div class="contact-heading-wrap"><h2 id="contact-title">Let's make something<br/><em>remarkable.</em></h2><p>I'm interested in ambitious engineering teams, challenging product problems, and opportunities to relocate to the Netherlands or Belgium.</p></div><div class="contact-actions"><a class="button button-dark" href="mailto:" id="email-link" hidden>Compose in Gmail <span class="button-arrow">↗</span></a><a class="button button-dark" id="linkedin-link" href="#contact" target="_blank" rel="noopener noreferrer" hidden>Connect on LinkedIn <span class="button-arrow">↗</span></a><button class="button button-dark" id="copy-email" type="button" hidden>Copy email address <span class="button-arrow">⧉</span></button><button class="button button-dark" id="copy-link" type="button">Copy portfolio link <span class="button-arrow">⧉</span></button></div><div class="contact-links"><a id="github-link" href="#contact" target="_blank" rel="noopener noreferrer" hidden><span class="social-icon">⌘</span> GitHub ↗</a><a id="secondary-linkedin-link" href="#contact" target="_blank" rel="noopener noreferrer" hidden>in LinkedIn ↗</a><a id="resume-link" href="#contact" download hidden>↓ Download résumé</a><span class="contact-location">↗ Based in Pakistan · Open to relocation</span></div></div></div></section>
   </main>
   <footer class="site-footer"><div class="container footer-inner"><a class="footer-brand" href="#top">MJ<span>.</span></a><p>Designed with intention. Built with care.</p><span>© <span id="year">2026</span> <span data-profile="name">Mirza Jahangeer</span></span><a class="back-to-top" href="#top">Back to top ↑</a></div></footer>
 
@@ -741,7 +741,9 @@ const setExternalLink = (id, value, prefix = '') => {
   if (!safe) return;
   if (prefix === 'mailto:') {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(safe)) return;
-    el.href = `mailto:${safe}`;
+    el.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(safe)}`;
+    el.target = '_blank';
+    el.rel = 'noopener noreferrer';
   } else if (prefix === 'resume') {
     // Accept only relative local paths for downloadable résumés.
     if (/^(?:https?:|\/\/|javascript:|data:)/i.test(safe) || safe.includes('..')) return;
@@ -877,6 +879,30 @@ const showToast = message => {
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => toast.classList.remove('is-visible'), 2500);
 };
+const copyText = async value => {
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error('Clipboard API unavailable');
+    await navigator.clipboard.writeText(value);
+    return true;
+  } catch {
+    const input = document.createElement('textarea');
+    input.value = value;
+    input.style.position = 'fixed';
+    input.style.opacity = '0';
+    document.body.appendChild(input);
+    input.select();
+    let copied = false;
+    try { copied = document.execCommand('copy'); } catch {}
+    input.remove();
+    return copied;
+  }
+};
+if (profile.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email.trim())) {
+  $('#copy-email').hidden = false;
+  $('#copy-email').addEventListener('click', async () => {
+    showToast(await copyText(profile.email.trim()) ? 'Email address copied!' : `Email: ${profile.email.trim()}`);
+  });
+}
 $('#copy-link').addEventListener('click', async () => {
   const current = location.href.split('#')[0];
   try {
